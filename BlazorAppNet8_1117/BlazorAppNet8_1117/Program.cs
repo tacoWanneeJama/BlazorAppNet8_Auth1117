@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
+var config = builder.Configuration;
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
@@ -18,12 +19,25 @@ builder.Services.AddScoped<IdentityUserAccessor>();
 builder.Services.AddScoped<IdentityRedirectManager>();
 builder.Services.AddScoped<AuthenticationStateProvider, PersistingRevalidatingAuthenticationStateProvider>();
 
-builder.Services.AddAuthentication(options =>
+// I did an attempt to get it login with MS using:
+// https://learn.microsoft.com/en-us/aspnet/core/security/authentication/social/microsoft-logins?view=aspnetcore-8.0
+
+builder.Services.AddAuthentication(
+     options =>
     {
         options.DefaultScheme = IdentityConstants.ApplicationScheme;
         options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
-    })
-    .AddIdentityCookies();
+    }
+    )
+       .AddMicrosoftAccount(microsoftOptions =>
+       {
+           microsoftOptions.ClientId = config["Authentication:Microsoft:ClientId"];
+           microsoftOptions.ClientSecret = config["Authentication:Microsoft:ClientSecret"];
+           //microsoftOptions.AuthorizationEndpoint= config["Authentication:Microsoft:Endpoint"];
+           //microsoftOptions.of
+       })
+    .AddIdentityCookies()
+    ;
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
