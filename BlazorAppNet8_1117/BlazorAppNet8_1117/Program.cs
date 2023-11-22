@@ -22,6 +22,9 @@ builder.Services.AddScoped<AuthenticationStateProvider, PersistingRevalidatingAu
 // I did an attempt to get it login with MS using:
 // https://learn.microsoft.com/en-us/aspnet/core/security/authentication/social/microsoft-logins?view=aspnetcore-8.0
 
+// Other inspiration:
+// https://devblogs.microsoft.com/dotnet/whats-new-with-identity-in-dotnet-8/#basic-web-api-backend
+
 builder.Services.AddAuthentication(
      options =>
     {
@@ -33,7 +36,8 @@ builder.Services.AddAuthentication(
        {
            microsoftOptions.ClientId = config["Authentication:Microsoft:ClientId"];
            microsoftOptions.ClientSecret = config["Authentication:Microsoft:ClientSecret"];
-           //microsoftOptions.AuthorizationEndpoint= config["Authentication:Microsoft:Endpoint"];
+           //microsoftOptions.ReturnUrlParameter = "https://localhost:7073/signin-microsoft1";
+           microsoftOptions.AuthorizationEndpoint = config["Authentication:Microsoft:Endpoint"];
            //microsoftOptions.of
        })
     .AddIdentityCookies()
